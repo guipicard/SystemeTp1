@@ -1048,7 +1048,7 @@ MonoBehaviour:
   - {fileID: 1058148327}
   m_SpeedSlow: 0.25
   m_SpeedFast: 0.75
-  JumpForce: 5
+  JumpForce: 10
 --- !u!95 &738573395
 Animator:
   serializedVersion: 3
@@ -1109,7 +1109,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 3
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
