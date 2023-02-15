@@ -4,7 +4,21 @@ using UnityEngine;
 
 public class BackgroundMouvment : MonoBehaviour
 {
+    // Camera
+    private Camera mainCamera;
+
+    // Coroutine
+    [SerializeField] private float beginCoroutineDuration;
+    [SerializeField] private float beginCoroutineTime;
+    [SerializeField] private float beginCoroutineCameraTime;
+    [SerializeField] private Vector3 beginCoroutineCameraDestination;
+    private Vector3 beginCoroutineCameraPosition;
+    private bool beginCoroutineEnd;
+    private bool beginCoroutineState;
+    private Coroutine beginCoroutine;
+
     // Backgrounds
+    [SerializeField] private GameObject backgrounds2Container;
     [SerializeField] private Transform[] backgrounds1;
     [SerializeField] private Transform[] backgrounds2;
     private int backgroundsLength;
@@ -34,6 +48,11 @@ public class BackgroundMouvment : MonoBehaviour
 
     void Start()
     {
+        mainCamera = Camera.main;
+        // Coroutine
+        beginCoroutineCameraPosition = mainCamera.transform.position;
+        beginCoroutineEnd = false;
+
         // Serialized
         backgroundsSizex = backgrounds1[0].GetComponent<SpriteRenderer>().bounds.size.x;
         backgroundsLength = backgrounds1.Length;
@@ -56,9 +75,24 @@ public class BackgroundMouvment : MonoBehaviour
 
     void Update()
     {
-        Inputs();
-        BackGroundParallax(m_LeftInput, m_RightInput);
-        Animate(m_LeftInput, m_RightInput, m_LeftShift);
+        if (beginCoroutineEnd)
+        {
+            Inputs();
+            BackGroundParallax(m_LeftInput, m_RightInput);
+            Animate(m_LeftInput, m_RightInput, m_LeftShift);
+        }
+        else
+        {
+            if (beginCoroutineState)
+            {
+                beginCoroutine = StartCoroutine(AtStartCoroutine());
+            }
+            else
+            {
+                StopCoroutine(AtStartCoroutine());
+                beginCoroutineEnd = true;
+            }
+        }
     }
 
     private void FixedUpdate()
@@ -92,12 +126,14 @@ public class BackgroundMouvment : MonoBehaviour
                 newPosition.x += backgroundsSizex;
                 backgrounds2[i].position = newPosition;
             }
+
             if (b2x < 0 && b1x < b2x)
             {
                 Vector3 newPosition = backgrounds1[i].position;
                 newPosition.x += backgroundsSizex;
                 backgrounds1[i].position = newPosition;
             }
+
             //// Going Left
             if (b1x > 0 && b2x >= b1x)
             {
@@ -105,6 +141,7 @@ public class BackgroundMouvment : MonoBehaviour
                 newPosition.x -= backgroundsSizex;
                 backgrounds2[i].position = newPosition;
             }
+
             if (b2x > 0 && b1x > b2x)
             {
                 Vector3 newPosition = backgrounds1[i].position;
@@ -115,13 +152,18 @@ public class BackgroundMouvment : MonoBehaviour
             // Parallax Mouvment
             if (left)
             {
-                backgrounds1[i].Translate(Vector3.right * (((backgroundsLength + 1) - i) * m_SpeedMultiplier) * Time.deltaTime);
-                backgrounds2[i].Translate(Vector3.right * (((backgrounds1.Length + 1) - i) * m_SpeedMultiplier) * Time.deltaTime);
+                backgrounds1[i].Translate(Vector3.right * (((backgroundsLength + 1) - i) * m_SpeedMultiplier) *
+                                          Time.deltaTime);
+                backgrounds2[i].Translate(Vector3.right * (((backgrounds1.Length + 1) - i) * m_SpeedMultiplier) *
+                                          Time.deltaTime);
             }
+
             if (right)
             {
-                backgrounds1[i].Translate(Vector3.left * (((backgroundsLength + 1) - i) * m_SpeedMultiplier) * Time.deltaTime);
-                backgrounds2[i].Translate(Vector3.left * (((backgroundsLength + 1) - i) * m_SpeedMultiplier) * Time.deltaTime);
+                backgrounds1[i].Translate(Vector3.left * (((backgroundsLength + 1) - i) * m_SpeedMultiplier) *
+                                          Time.deltaTime);
+                backgrounds2[i].Translate(Vector3.left * (((backgroundsLength + 1) - i) * m_SpeedMultiplier) *
+                                          Time.deltaTime);
             }
         }
     }
@@ -138,8 +180,14 @@ public class BackgroundMouvment : MonoBehaviour
             m_Animator.SetBool("Run", false);
             m_SpeedMultiplier = m_SpeedSlow;
         }
+
         if (left || right)
         {
+            if (!backgrounds2Container.activeInHierarchy)
+            {
+                backgrounds2Container.SetActive(true);
+            }
+
             m_Animator.SetBool("Walk", true);
         }
         else
@@ -151,6 +199,7 @@ public class BackgroundMouvment : MonoBehaviour
         {
             m_SpriteRenderer.flipX = true;
         }
+
         if (Input.GetKeyDown(KeyCode.D))
         {
             m_SpriteRenderer.flipX = false;
@@ -173,6 +222,26 @@ public class BackgroundMouvment : MonoBehaviour
         if (collision.gameObject.layer == 7)
         {
             m_JumpCount = 0;
+        }
+    }
+
+    private IEnumerator AtStartCoroutine()
+    {
+        while (true)
+        {
+            beginCoroutineTime += Time.deltaTime;
+            if (beginCoroutineTime > beginCoroutineCameraTime)
+            {
+                mainCamera.transform.position = beginCoroutineCameraPosition +
+                                                (beginCoroutineCameraDestination - beginCoroutineCameraPosition) *
+                                                (beginCoroutineTime - 1) / beginCoroutineDuration;
+            }
+
+            if (beginCoroutineTime > beginCoroutineCameraTime)
+            {
+                beginCoroutineState = false;
+            }
+            yield return new WaitForSeconds(2.0f);
         }
     }
 }

@@ -54,6 +54,7 @@
   <ItemGroup>
      <Compile Include="Assets\Foggy Mountains Background\Demo\BackgroundHelper.cs" />
      <Compile Include="Assets\SystemeTP1\Script\BackgroundMouvment.cs" />
+     <Compile Include="Assets\SystemeTP1\Script\MainMenuScript.cs" />
  <Reference Include="UnityEngine">
  <HintPath>C:/Program Files/Unity2020.3.13f1/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>
  </Reference>
