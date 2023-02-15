@@ -52,6 +52,7 @@ public class BackgroundMouvment : MonoBehaviour
         // Coroutine
         beginCoroutineCameraPosition = mainCamera.transform.position;
         beginCoroutineEnd = false;
+        beginCoroutineState = true;
 
         // Serialized
         backgroundsSizex = backgrounds1[0].GetComponent<SpriteRenderer>().bounds.size.x;
@@ -86,10 +87,11 @@ public class BackgroundMouvment : MonoBehaviour
             if (beginCoroutineState)
             {
                 beginCoroutine = StartCoroutine(AtStartCoroutine());
+                beginCoroutineState = false;
             }
-            else
+            else if (mainCamera.transform.position.y <= beginCoroutineCameraDestination.y)
             {
-                StopCoroutine(AtStartCoroutine());
+                StopCoroutine(beginCoroutine);
                 beginCoroutineEnd = true;
             }
         }
@@ -237,11 +239,11 @@ public class BackgroundMouvment : MonoBehaviour
                                                 (beginCoroutineTime - 1) / beginCoroutineDuration;
             }
 
-            if (beginCoroutineTime > beginCoroutineCameraTime)
-            {
-                beginCoroutineState = false;
-            }
-            yield return new WaitForSeconds(2.0f);
+            // if (beginCoroutineTime > beginCoroutineDuration)
+            // {
+            //     beginCoroutineState = false;
+            // }
+            yield return null;
         }
     }
 }

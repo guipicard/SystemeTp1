@@ -1024,6 +1024,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e8962853be1a444ab967f9d6286cfaf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  beginCoroutineDuration: 2
+  beginCoroutineTime: 0
+  beginCoroutineCameraTime: 1
+  beginCoroutineCameraDestination: {x: 0, y: -0.5, z: -1}
   backgrounds2Container: {fileID: 1751603995}
   backgrounds1:
   - {fileID: 607091769}

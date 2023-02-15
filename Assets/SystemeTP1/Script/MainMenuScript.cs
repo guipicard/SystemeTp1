@@ -30,13 +30,9 @@ public class MainMenuScript : MonoBehaviour
     {
         if (m_StartNewGame)
         {
-            if (NewGameTransitionTime < NewGameTransitionDuration)
+            if (NewGameTransitionTime >= NewGameTransitionDuration)
             {
-                StartNewGameCoroutine = StartCoroutine(NewGameCoroutine());
-            }
-            else
-            {
-                StopCoroutine(NewGameCoroutine());
+                StopCoroutine(StartNewGameCoroutine);
                 SceneManager.LoadScene("SelectionNiveau");
             }
         }
@@ -57,19 +53,21 @@ public class MainMenuScript : MonoBehaviour
             // a + (b-a) * t
             m_ButtonsContainer.anchoredPosition3D = m_ButtonsStartPosition + (m_NewButtonsPosition - m_ButtonsStartPosition) * 
                 EaseOut(NewGameTransitionTime / NewGameTransitionDuration);
-            yield return new WaitForSeconds(NewGameTransitionDuration);
+            yield return null;
         }
     }
     
     private float EaseOut(float t)
     {
-        return t * Mathf.Abs(t);
+        return t * t;
+        // return t * Mathf.Abs(t);
     }
 
     public void NewGameButton()
     {
         Debug.Log("button");
         m_StartNewGame = true;
+        StartNewGameCoroutine = StartCoroutine(NewGameCoroutine());
     }
 
     public void LoadGameButton()

@@ -848,7 +848,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dcc1f2bf63a8dcf478f01a57cfb31cf5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  NewGameTransitionDuration: 1
+  NewGameTransitionDuration: 2
   m_ButtonsContainer: {fileID: 163639003}
   m_NewButtonsPosition: {x: 0, y: 360, z: 0}
 --- !u!1 &681080892
