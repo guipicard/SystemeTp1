@@ -18,7 +18,7 @@ public class BackgroundMouvment : MonoBehaviour
     private bool beginCoroutineEnd;
     private bool beginCoroutineState;
     private Coroutine beginCoroutine;
-    private int beginCoroutineStates;
+    private int beginCoroutineSteps;
 
     // Backgrounds
     [SerializeField] private GameObject backgrounds2Container;
@@ -33,6 +33,7 @@ public class BackgroundMouvment : MonoBehaviour
     private float m_SpeedMultiplier;
     private bool m_IsBlocked;
     private bool m_BlockedRight;
+    private float m_Direction;
     
 
     // Physics
@@ -63,7 +64,7 @@ public class BackgroundMouvment : MonoBehaviour
         beginCoroutineCameraPosition = mainCamera.transform.position;
         beginCoroutineEnd = false;
         beginCoroutineState = true;
-        beginCoroutineStates = 0;
+        beginCoroutineSteps = 0;
 
         // Serialized
         backgroundsSizex = backgrounds1[0].GetComponent<SpriteRenderer>().bounds.size.x;
@@ -94,7 +95,6 @@ public class BackgroundMouvment : MonoBehaviour
             Inputs();
             CollisionDetector();
             BackGroundParallax(m_LeftInput, m_RightInput);
-            GroundMovement(m_LeftInput, m_RightInput, m_LeftShift);
             Animate(m_LeftInput, m_RightInput, m_LeftShift);
         }
         else
@@ -104,7 +104,7 @@ public class BackgroundMouvment : MonoBehaviour
                 beginCoroutine = StartCoroutine(AtStartCoroutine());
                 beginCoroutineState = false;
             }
-            else if (beginCoroutineStates == 3)
+            else if (beginCoroutineSteps == 3)
             {
                 StopCoroutine(beginCoroutine);
                 beginCoroutineEnd = true;
@@ -130,12 +130,26 @@ public class BackgroundMouvment : MonoBehaviour
 
     private void BackGroundParallax(bool left, bool right)
     {
+        if (left)
+        {
+            m_Direction = 1.0f;
+        }
+        else if (right)
+        {
+            m_Direction = -1.0f;
+        }
+        else
+        {
+            m_Direction = 0;
+        }
+        
         for (int i = 0; i < backgroundsLength; i++)
         {
             float b1x = backgrounds1[i].position.x;
             float b2x = backgrounds2[i].position.x;
 
             // Making it Infinite
+            
             // Going Right
             if (b1x < 0 && b2x <= b1x)
             {
@@ -143,7 +157,6 @@ public class BackgroundMouvment : MonoBehaviour
                 newPosition.x += backgroundsSizex;
                 backgrounds2[i].position = newPosition;
             }
-
             if (b2x < 0 && b1x < b2x)
             {
                 Vector3 newPosition = backgrounds1[i].position;
@@ -158,8 +171,6 @@ public class BackgroundMouvment : MonoBehaviour
                 newPosition.x -= backgroundsSizex;
                 backgrounds2[i].position = newPosition;
             }
-            
-            // Going right
             if (b2x > 0 && b1x > b2x)
             {
                 Vector3 newPosition = backgrounds1[i].position;
@@ -168,21 +179,17 @@ public class BackgroundMouvment : MonoBehaviour
             }
 
             // Parallax Mouvment
-            if (left)
-            {
-                backgrounds1[i].Translate(Vector3.right * (((i + 1)) * m_SpeedMultiplier) *
-                                          Time.deltaTime);
-                backgrounds2[i].Translate(Vector3.right * (((i + 1)) * m_SpeedMultiplier) *
-                                          Time.deltaTime);
-            }
-
-            if (right)
-            {
-                backgrounds1[i].Translate(Vector3.left * (((i + 1)) * m_SpeedMultiplier) *
-                                          Time.deltaTime);
-                backgrounds2[i].Translate(Vector3.left * (((i + 1)) * m_SpeedMultiplier) *
-                                          Time.deltaTime);
-            }
+            float backgroundSpeed = (i + 1) * m_SpeedMultiplier;
+            
+            backgrounds1[i].Translate(new Vector3(m_Direction * backgroundSpeed * Time.deltaTime, 0, 0));
+            backgrounds2[i].Translate(new Vector3(m_Direction * backgroundSpeed * Time.deltaTime, 0, 0));
+        }
+        
+        float groundSpeed = m_SpeedMultiplier * m_MoveSpeed;
+        
+        foreach (Transform mLevelCube in m_LevelCubes)
+        {
+            mLevelCube.Translate(new Vector3(m_Direction * groundSpeed * Time.deltaTime, 0, 0));
         }
     }
 
@@ -298,17 +305,17 @@ public class BackgroundMouvment : MonoBehaviour
             beginCoroutineTime += Time.deltaTime;
             if (beginCoroutineTime > 1)
             {
-                beginCoroutineStates++;
+                beginCoroutineSteps++;
                 beginCoroutineTime = 0;
             }
 
-            if (beginCoroutineStates == 1)
+            if (beginCoroutineSteps == 1)
             {
                 mainCamera.transform.position = beginCoroutineCameraPosition +
                                                 (beginCoroutineCameraDestination - beginCoroutineCameraPosition) *
                                                 beginCoroutineTime;
             }
-            else if (beginCoroutineStates == 2)
+            else if (beginCoroutineSteps == 2)
             {
                 foreach (Transform mLevelCube in m_LevelCubes)
                 {
@@ -321,22 +328,5 @@ public class BackgroundMouvment : MonoBehaviour
             yield return null;
         }
     }
-
-    private void GroundMovement(bool left, bool right, bool shift)
-    {
-        if (left)
-        {
-            foreach (Transform mLevelCube in m_LevelCubes)
-            {
-                mLevelCube.Translate(Vector3.right * (m_SpeedMultiplier * m_MoveSpeed) * Time.deltaTime);
-            }
-        }
-        else if (right)
-        {
-            foreach (Transform mLevelCube in m_LevelCubes)
-            {
-                mLevelCube.Translate(Vector3.left * (m_SpeedMultiplier * m_MoveSpeed) * Time.deltaTime);
-            }
-        }
-    }
+    
 }
