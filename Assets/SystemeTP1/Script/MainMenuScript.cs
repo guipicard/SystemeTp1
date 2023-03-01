@@ -42,7 +42,6 @@ public class MainMenuScript : MonoBehaviour
     {
         while (true)
         {
-            Debug.Log("Coroutine");
             if (m_ButtonsGoDown && NewGameTransitionTime < 0)
             {
                 m_ButtonsGoDown = false;
@@ -65,7 +64,6 @@ public class MainMenuScript : MonoBehaviour
 
     public void NewGameButton()
     {
-        Debug.Log("button");
         m_StartNewGame = true;
         StartNewGameCoroutine = StartCoroutine(NewGameCoroutine());
     }

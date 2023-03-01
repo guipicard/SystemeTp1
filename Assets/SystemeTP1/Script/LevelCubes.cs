@@ -13,32 +13,39 @@ public class LevelCubes : MonoBehaviour
 
     [SerializeField] private Canvas m_LevelCanvas;
 
+    private LevelInfo m_LevelInfo;
+
     public ScripableDescriptions m_ScriptableDescription;
 
-    private Action<ScripableDescriptions> m_LevelAction;
-    
     void Start()
     {
-
-    }
-    
-    void Update()
-    {
-
+        m_LevelInfo = m_LevelCanvas.GetComponent<LevelInfo>();
     }
 
-    private void OnCollisionEnter2D(Collision2D col)
+    private void OnTriggerEnter2D(Collider2D col)
     {
-        if (col.collider.gameObject.CompareTag("Player"))
+        if (col.gameObject.CompareTag("Player"))
         {
             StartLevelCoroutine();
         }
     }
 
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.gameObject.CompareTag("Player"))
+        {
+            StopLevelCoroutine();
+        }
+    }
+
     private void StartLevelCoroutine()
     {
-        m_LevelAction = m_LevelCanvas.GetComponent<LevelInfo>().LevelCoroutineManager;
-        m_LevelAction(m_ScriptableDescription);
+        m_LevelInfo.LevelCoroutineManager(m_ScriptableDescription);
+    }
+
+    private void StopLevelCoroutine()
+    {
+        m_LevelInfo.LevelCoroutineStop();
     }
     
 }

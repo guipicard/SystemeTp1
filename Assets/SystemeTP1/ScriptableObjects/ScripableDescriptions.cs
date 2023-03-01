@@ -10,4 +10,5 @@ public class ScripableDescriptions : ScriptableObject
 {
     public string m_name;
     public string[] m_Description;
+    public int m_Stars;
 }

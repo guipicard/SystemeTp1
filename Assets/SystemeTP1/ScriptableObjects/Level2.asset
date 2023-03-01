@@ -12,5 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc840dd2d71d4754882fe0dffed9eda1, type: 3}
   m_Name: Level2
   m_EditorClassIdentifier: 
-  m_name: 
-  m_Description: 
+  m_name: Level 2
+  m_Description:
+  - the thin goes
+  - brrrrrrrrrrrrrra
+  - papapapapa
+  - skwiat
+  - poom poom
+  - boom boom
+  - poom poom
+  m_Stars: 2

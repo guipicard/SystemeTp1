@@ -10,6 +10,7 @@ public class LevelInfo : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI m_LevelNameText;
     [SerializeField] private TextMeshProUGUI m_LevelDescriptionText;
+    [SerializeField] private Text m_ButtonText; 
     [SerializeField] private GameObject Player;
 
     private BackgroundMouvment PlayerScript;
@@ -23,12 +24,15 @@ public class LevelInfo : MonoBehaviour
 
     private int SentenceIndex;
 
+    private bool m_PlayingDescription;
+
     // Start is called before the first frame update
     void Start()
     {
         DisableSelf();
         letterIndex = 0;
         SentenceIndex = 0;
+        m_PlayingDescription = false;
 
         PlayerScript = Player.GetComponent<BackgroundMouvment>();
     }
@@ -36,48 +40,35 @@ public class LevelInfo : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!PlayerScript.m_CanGetInput)
+        if (m_PlayingDescription)
         {
-            if (letterIndex >= m_LevelDescription[SentenceIndex].Length)
+            if (Input.GetKeyDown(KeyCode.Return))
             {
-                StopCoroutine(m_Coroutine);
-                if (SentenceIndex >= m_LevelDescription.Length - 1)
-                {
-                    if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Escape))
-                    {
-                        PlayerScript.m_CanGetInput = true;
-                        DisableSelf();
-                    }
-                }
-                else
-                {
-                    if (Input.GetKeyDown(KeyCode.Space))
-                    {
-                        SentenceIndex++;
-                        m_Coroutine = StartCoroutine(LevelDescriptionCoroutine());
-                    }
+                MessageHandler();
+            }
 
-                    if (Input.GetKeyDown(KeyCode.Escape))
-                    {
-                        PlayerScript.m_CanGetInput = true;
-                        DisableSelf();
-                    }
-                }
-            }
-            else
-            {
-                if (Input.GetKeyDown(KeyCode.Space))
-                {
-                    m_LevelDescriptionText.text = m_LevelDescription[SentenceIndex];
-                    letterIndex = m_LevelDescription[SentenceIndex].Length;
-                }
-            }
             if (Input.GetKeyDown(KeyCode.Escape))
             {
-                StopCoroutine(m_Coroutine);
-                PlayerScript.m_CanGetInput = true;
-                DisableSelf();
+                LevelCoroutineStop();
             }
+        }
+    }
+
+    public void MessageHandler()
+    {
+        if (letterIndex < m_LevelDescription[SentenceIndex].Length)
+        {
+            m_LevelDescriptionText.text = m_LevelDescription[SentenceIndex];
+            letterIndex = m_LevelDescription[SentenceIndex].Length;
+        }
+        else if (SentenceIndex == m_LevelDescription.Length - 1)
+        {
+            m_ButtonText.text = "Play!";
+        }
+        else if (letterIndex == m_LevelDescription[SentenceIndex].Length)
+        {
+            SentenceIndex++;
+            m_Coroutine = StartCoroutine(LevelDescriptionCoroutine());
         }
     }
 
@@ -85,23 +76,32 @@ public class LevelInfo : MonoBehaviour
     {
         m_LevelName = LevelInfos.m_name;
         m_LevelDescription = LevelInfos.m_Description;
-        PlayerScript.m_CanGetInput = false;
         SentenceIndex = 0;
         EnableSelf();
+        m_ButtonText.text = "Next...";
+        m_PlayingDescription = true;
 
         m_Coroutine = StartCoroutine(LevelDescriptionCoroutine());
+    }
+
+    public void LevelCoroutineStop()
+    {
+        StopCoroutine(m_Coroutine);
+        m_PlayingDescription = false;
+        DisableSelf();
     }
 
     IEnumerator LevelDescriptionCoroutine()
     {
         m_LevelDescriptionText.text = "";
+        m_LevelNameText.text = m_LevelName;
         letterIndex = 0;
-        while (true)
+        while (letterIndex < m_LevelDescription[SentenceIndex].Length)
         {
             m_LevelDescriptionText.text += m_LevelDescription[SentenceIndex][letterIndex];
             letterIndex++;
 
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.2f);
         }
     }
 
