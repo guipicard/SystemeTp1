@@ -57,6 +57,8 @@ public class BackgroundMouvment : MonoBehaviour
     [SerializeField] private Transform[] m_LevelCubes;
     [SerializeField] private float m_MoveSpeed;
     
+    public bool m_CanGetInput;
+    
     void Start()
     {
         mainCamera = Camera.main;
@@ -85,14 +87,19 @@ public class BackgroundMouvment : MonoBehaviour
         m_IsBlocked = false;
 
         m_JumpCount = 0;
-    }
+
+        m_CanGetInput = true;
+}
 
 
     void Update()
     {
         if (beginCoroutineEnd)
         {
-            Inputs();
+            if (m_CanGetInput)
+            {
+                Inputs();
+            }
             CollisionDetector();
             BackGroundParallax(m_LeftInput, m_RightInput);
             Animate(m_LeftInput, m_RightInput, m_LeftShift);
