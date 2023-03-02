@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_name: Level 3
   m_Description:
-  - yes
-  - sir
-  - mil
-  - ler
+  - Creatures of the day,
+  - Creature of the night,
+  - But nothing will Compete
+  - With those scary bunnies
   m_Stars: 3
